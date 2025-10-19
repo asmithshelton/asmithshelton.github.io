@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TravelAgencyDB – Browser SQL Instructions</title>
+  <style>
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; margin: 2rem; line-height: 1.5; }
+    code, pre { background: #f6f8fa; padding: 0.2rem 0.4rem; border-radius: 4px; }
+    .card { border: 1px solid #e5e7eb; border-radius: 10px; padding: 1rem 1.2rem; margin-bottom: 1rem; }
+    h1 { margin-top: 0; }
+    a.button { display: inline-block; padding: 0.6rem 0.9rem; border-radius: 8px; border: 1px solid #1f2937; text-decoration: none; }
+  </style>
+</head>
+<body>
+  <h1>TravelAgencyDB</h1>
+  <p>This folder contains a ready-to-use SQLite database for in-browser SQL demos.</p>
+
+  <div class="card">
+    <h2>1) Share the database file</h2>
+    <p>File to share: <code>TravelAgencyDB.sqlite</code></p>
+    <p>Host this folder (GitHub Pages / NVCC faculty web space / Netlify).</p>
+  </div>
+
+  <div class="card">
+    <h2>2) Open it in SQLime (hosted)</h2>
+    <ol>
+      <li>Go to <a href="https://sqlime.org/" target="_blank" rel="noopener">sqlime.org</a>.</li>
+      <li>Click <strong>Open → From URL</strong>.</li>
+      <li>Paste the public URL to <code>TravelAgencyDB.sqlite</code> from this folder.</li>
+      <li>Run queries in the browser. No installs needed.</li>
+    </ol>
+    <p><em>Tip:</em> After you publish this folder, replace <code>YOUR_DB_URL_HERE</code> in the script with your actual URL to enable a one-click button.</p>
+    <p>
+      <a class="button" id="quickLink" target="_blank" rel="noopener">Open SQLime</a>
+    </p>
+  </div>
+
+  <div class="card">
+    <h2>3) Demo queries</h2>
+<pre>
+-- Join travelers → bookings → tours → destinations
+SELECT tr.FirstName, tr.LastName, toz.TourName, d.City, d.Country
+FROM Travelers tr
+JOIN Bookings b ON b.TravelerID = tr.TravelerID
+JOIN Tours toz ON toz.TourID = b.TourID
+JOIN Destinations d ON d.DestinationID = toz.DestinationID;
+
+-- Use totals view
+SELECT b.BookingID, toz.TourName, v.TotalCost
+FROM v_BookingTotals v
+JOIN Bookings b ON b.BookingID = v.BookingID
+JOIN Tours toz ON toz.TourID = b.TourID;
+
+-- Aggregation example
+SELECT d.Country, COUNT(*) AS NumTours, ROUND(AVG(toz.PricePerPerson),2) AS AvgPrice
+FROM Tours toz
+JOIN Destinations d ON d.DestinationID = toz.DestinationID
+GROUP BY d.Country;
+</pre>
+  </div>
+
+  <script>
+    // Optional: set your published DB URL to unlock a "preloaded" open link.
+    const dbUrl = "YOUR_DB_URL_HERE"; // e.g., "https://username.github.io/sqlime_travel_agency_site/TravelAgencyDB.sqlite"
+    const btn = document.getElementById("quickLink");
+    if (dbUrl && dbUrl !== "YOUR_DB_URL_HERE") {
+      btn.href = "https://sqlime.org/#" + encodeURIComponent(dbUrl);
+      btn.textContent = "Open in SQLime (preloaded)";
+    } else {
+      btn.href = "https://sqlime.org/";
+      btn.textContent = "Open SQLime (paste your DB URL)";
+    }
+  </script>
+</body>
+</html>
